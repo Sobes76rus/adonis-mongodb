@@ -93,7 +93,7 @@ class MongodbModelAuthUserProvider
     }
   }
 
-  public async getUserFor(user: Model): Promise<MongodbModelAuthProviderUser> {
+  public getUserFor(user: Model): MongodbModelAuthProviderUser {
     return new MongodbModelAuthProviderUser(
       user,
       this.identifierKey,

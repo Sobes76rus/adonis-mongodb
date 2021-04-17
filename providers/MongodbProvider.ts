@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 
+import { IocContract } from '@adonisjs/fold';
 import { ApplicationContract } from '@ioc:Adonis/Core/Application';
 
 import { getMongodbModelAuthProvider } from '../src/Auth/MongodbModelAuthProvider';
@@ -8,7 +9,13 @@ import { Model, AutoIncrementModel } from '../src/Model/Model';
 import { Mongodb } from '../src/Mongodb';
 
 export default class MongodbProvider {
-  public constructor(protected app: ApplicationContract) {}
+  private app: any;  
+  public constructor(app: IocContract) {
+    this.app = {
+      container: app,
+      config: app.use('Adonis/Core/Config')
+    };
+  }
 
   public register(): void {
     this.app.container.singleton('Mongodb/Database', () => {
