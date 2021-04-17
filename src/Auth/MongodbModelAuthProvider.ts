@@ -89,7 +89,7 @@ class MongodbModelAuthUserProvider
     if (this.config.model) {
       return esmResolver(await this.config.model());
     } else {
-      return esmResolver(await this.app.container.useAsync('App/Models/User'));
+      return esmResolver(await this.app.container.use('App/Models/User'));
     }
   }
 
