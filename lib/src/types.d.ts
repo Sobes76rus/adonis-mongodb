@@ -150,6 +150,16 @@ declare module '@ioc:Mongodb/Model' {
         hashDriver?: keyof HashersList;
     }
 }
+declare module '@ioc:Mongodb/Hooks' {
+    import { Model } from '@ioc:Mongodb/Model';
+    interface IHooks {
+        (target: Model, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): undefined;
+    }
+    let beforeCreate: IHooks;
+    let afterCreate: IHooks;
+    let beforeUpdate: IHooks;
+    let afterUpdate: IHooks;
+}
 declare module '@ioc:Mongodb/ObjectId' {
     import { ObjectId } from 'mongodb';
     export default ObjectId;
