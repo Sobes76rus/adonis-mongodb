@@ -264,6 +264,23 @@ declare module '@ioc:Mongodb/Model' {
   }
 }
 
+declare module '@ioc:Mongodb/Hooks' {
+  import { Model } from '@ioc:Mongodb/Model';
+
+  interface IHooks {
+    (
+      target: Model,
+      propertyName: string,
+      descriptor: TypedPropertyDescriptor<Function>,
+    ): undefined;
+  }
+
+  export let beforeCreate: IHooks;
+  export let afterCreate: IHooks;
+  export let beforeUpdate: IHooks;
+  export let afterUpdate: IHooks;
+}
+
 declare module '@ioc:Mongodb/ObjectId' {
   import { ObjectId } from 'mongodb';
   export default ObjectId;

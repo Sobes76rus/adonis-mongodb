@@ -7,13 +7,14 @@ import { getMongodbModelAuthProvider } from '../src/Auth/MongodbModelAuthProvide
 import createMigration from '../src/Migration';
 import { Model, AutoIncrementModel } from '../src/Model/Model';
 import { Mongodb } from '../src/Mongodb';
+import * as Hooks from '../src/Model/Hooks';
 
 export default class MongodbProvider {
-  private app: any;  
+  private app: any;
   public constructor(app: IocContract) {
     this.app = {
       container: app,
-      config: app.use('Adonis/Core/Config')
+      config: app.use('Adonis/Core/Config'),
     };
   }
 
@@ -29,6 +30,7 @@ export default class MongodbProvider {
 
       return { Model, AutoIncrementModel };
     });
+    this.app.container.singleton('Mongodb/Hooks', () => Hooks);
 
     this.app.container.singleton('Mongodb/Migration', () => {
       return createMigration(this.app.container.use('Mongodb/Database'));
