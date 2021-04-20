@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 
 import { getMongodb } from '../../../test-utils/TestUtils';
 import { Model, AutoIncrementModel } from '../Model';
+import * as hook from '../Hooks';
 
 interface IUser {
   username: string;
@@ -31,6 +32,33 @@ class Something extends Model {
   public static collectionName = 'somethingElse';
 
   public test: boolean;
+}
+
+class SomethingWithHooks extends Model {
+  public testBeforeCreateHook: boolean;
+  public testAfterCreateHook: boolean;
+  public testBeforeUpdateHook: boolean;
+  public testAfterUpdateHook: boolean;
+
+  @hook.beforeCreate
+  async beforeCreate() {
+    this.testBeforeCreateHook = true;
+  }
+
+  @hook.afterCreate
+  async afterCreate() {
+    this.testAfterCreateHook = true;
+  }
+
+  @hook.beforeUpdate
+  async beforeUpdate() {
+    this.testBeforeUpdateHook = true;
+  }
+
+  @hook.afterUpdate
+  async afterUpdate() {
+    this.testAfterUpdateHook = true;
+  }
 }
 
 let usernameCounter = 0;
@@ -348,4 +376,82 @@ test('toJSON method', async () => {
   };
 
   expect(JSON.stringify(jsonPost)).toStrictEqual(JSON.stringify(expected));
+});
+
+test('beforeCreate hook on create', async () => {
+  const item = new SomethingWithHooks();
+  expect(item.testBeforeCreateHook).toBe(undefined);
+  await item.save();
+  expect(item.testBeforeCreateHook).toBe(true);
+  const newItem = await SomethingWithHooks.findById(item.id);
+  expect(newItem?.testBeforeCreateHook).toBe(true);
+});
+
+test('afterCreate hook on create', async () => {
+  const item = new SomethingWithHooks();
+  expect(item.testAfterCreateHook).toBe(undefined);
+  await item.save();
+  expect(item.testAfterCreateHook).toBe(true);
+  const newItem = await SomethingWithHooks.findById(item.id);
+  expect(newItem?.testAfterCreateHook).toBe(undefined);
+});
+
+test('beforeUpdate hook on create', async () => {
+  const item = new SomethingWithHooks();
+  expect(item.testBeforeUpdateHook).toBe(undefined);
+  await item.save();
+  expect(item.testBeforeUpdateHook).toBe(undefined);
+  const newItem = await SomethingWithHooks.findById(item.id);
+  expect(newItem?.testBeforeUpdateHook).toBe(undefined);
+});
+
+test('afterUpdate hook on create', async () => {
+  const item = new SomethingWithHooks();
+  expect(item.testAfterUpdateHook).toBe(undefined);
+  await item.save();
+  expect(item.testAfterUpdateHook).toBe(undefined);
+  const newItem = await SomethingWithHooks.findById(item.id);
+  expect(newItem?.testAfterUpdateHook).toBe(undefined);
+});
+
+test('beforeCreate hook on update', async () => {
+  const item = new SomethingWithHooks();
+  await item.save();
+  expect(item.testBeforeCreateHook).toBe(true);
+  item.testBeforeCreateHook = false;
+  await item.save();
+  expect(item.testBeforeCreateHook).toBe(false);
+  const newItem = await SomethingWithHooks.findById(item.id);
+  expect(newItem?.testBeforeCreateHook).toBe(false);
+});
+
+test('afterCreate hook on update', async () => {
+  const item = new SomethingWithHooks();
+  await item.save();
+  expect(item.testAfterCreateHook).toBe(true);
+  item.testAfterCreateHook = false;
+  await item.save();
+  expect(item.testAfterCreateHook).toBe(false);
+  const newItem = await SomethingWithHooks.findById(item.id);
+  expect(newItem?.testAfterCreateHook).toBe(false);
+});
+
+test('beforeUpdate hook on update', async () => {
+  const item = new SomethingWithHooks();
+  await item.save();
+  expect(item.testBeforeUpdateHook).toBe(undefined);
+  await item.save();
+  expect(item.testBeforeUpdateHook).toBe(true);
+  const newItem = await SomethingWithHooks.findById(item.id);
+  expect(newItem?.testBeforeUpdateHook).toBe(true);
+});
+
+test('afterUpdate hook on update', async () => {
+  const item = new SomethingWithHooks();
+  await item.save();
+  expect(item.testAfterUpdateHook).toBe(undefined);
+  await item.save();
+  expect(item.testAfterUpdateHook).toBe(true);
+  const newItem = await SomethingWithHooks.findById(item.id);
+  expect(newItem?.testAfterUpdateHook).toBe(undefined);
 });

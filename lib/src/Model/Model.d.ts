@@ -27,6 +27,7 @@ declare class FindResult<T> {
     [Symbol.asyncIterator](): AsyncIterableIterator<T>;
 }
 export declare class Model {
+    private static $hooks;
     static $database: Mongodb;
     static collectionName?: string;
     readonly _id: any;
@@ -60,6 +61,8 @@ export declare class Model {
     delete(options?: CommonOptions): Promise<boolean>;
     merge<T extends Partial<Omit<this, '_id' | 'id' | ModelReadonlyFields>>>(values: NoExtraProperties<Partial<Omit<this, '_id' | 'id' | ModelReadonlyFields>>, T>): this;
     fill<T extends Partial<Omit<this, '_id' | 'id' | ModelReadonlyFields>>>(values: NoExtraProperties<Partial<Omit<this, '_id' | 'id' | ModelReadonlyFields>>, T>): this;
+    static addHook(name: string, target: Model, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): void;
+    protected callHooks(name: string, ...args: any[]): Promise<void>;
 }
 export declare class AutoIncrementModel extends Model {
     constructor(dbObj?: Record<string, unknown>, options?: IModelOptions);

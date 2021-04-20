@@ -1,3 +1,4 @@
+import { Exception } from '@poppinss/utils';
 import { cloneDeep, isEqual, pickBy, snakeCase } from 'lodash';
 import {
   ClientSession,
@@ -109,6 +110,7 @@ function computeCollectionName(constructorName: string): string {
 }
 
 export class Model {
+  private static $hooks: Map<string, Map<any, Array<Function>>> = new Map();
   public static $database: Mongodb;
   public static collectionName?: string;
 
@@ -315,6 +317,12 @@ export class Model {
     this.$ensureNotDeleted();
     const collection = await this.$ensureCollection();
 
+    if (this.$alreadySaved === false) {
+      await this.callHooks('beforeCreate');
+    } else {
+      await this.callHooks('beforeUpdate');
+    }
+
     const toSet = this.$prepareToSet();
     if (toSet === null) return false;
     if (this.$alreadySaved === false) {
@@ -331,7 +339,13 @@ export class Model {
       );
     }
     this.$originalData = cloneDeep(this.$currentData);
-    this.$alreadySaved = true;
+    if (this.$alreadySaved === false) {
+      this.$alreadySaved = true;
+      await this.callHooks('afterCreate');
+    } else {
+      await this.callHooks('afterUpdate');
+    }
+
     return true;
   }
 
@@ -376,6 +390,39 @@ export class Model {
     };
     if (createdAt) this.$currentData.createdAt = createdAt;
     return this.merge(values);
+  }
+
+  public static addHook(
+    name: string,
+    target: Model,
+    propertyName: string,
+    descriptor: TypedPropertyDescriptor<Function>,
+  ) {
+    if (descriptor.value === undefined) {
+      throw new Exception('Undefined descriptor value is not allowed');
+    }
+
+    const targetType = target.constructor;
+
+    if (!Model.$hooks.has(name)) {
+      Model.$hooks.set(name, new Map());
+    }
+
+    if (!Model.$hooks.get(name)?.has(targetType)) {
+      Model.$hooks.get(name)?.set(targetType, []);
+    }
+
+    Model.$hooks.get(name)?.get(targetType)?.push(descriptor.value);
+  }
+
+  protected async callHooks(name: string, ...args: any[]) {
+    for (let type of Model.$hooks.get(name)?.keys() || []) {
+      if (this instanceof type) {
+        for (let trigger of Model.$hooks.get(name)?.get(type) || []) {
+          await trigger.apply(this, args);
+        }
+      }
+    }
   }
 }
 
