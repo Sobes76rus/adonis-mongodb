@@ -435,6 +435,12 @@ export class AutoIncrementModel extends Model {
     this.$ensureNotDeleted();
     const collection = await this.$ensureCollection();
 
+    if (this.id === undefined) {
+      await this.callHooks('beforeCreate');
+    } else {
+      await this.callHooks('beforeUpdate');
+    }
+
     const toSet = this.$prepareToSet();
     if (toSet === null) return false;
 
@@ -464,6 +470,13 @@ export class AutoIncrementModel extends Model {
       );
     }
     this.$originalData = cloneDeep(this.$currentData);
+
+    if (this.id === undefined) {
+      await this.callHooks('afterCreate');
+    } else {
+      await this.callHooks('afterUpdate');
+    }
+
     return true;
   }
 }

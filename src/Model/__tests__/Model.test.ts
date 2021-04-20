@@ -61,6 +61,8 @@ class SomethingWithHooks extends Model {
   }
 }
 
+class ASomethingWithHooks extends SomethingWithHooks {}
+
 let usernameCounter = 0;
 function nextUsername() {
   return `root${++usernameCounter}`;
@@ -415,43 +417,43 @@ test('afterUpdate hook on create', async () => {
 });
 
 test('beforeCreate hook on update', async () => {
-  const item = new SomethingWithHooks();
+  const item = new ASomethingWithHooks();
   await item.save();
   expect(item.testBeforeCreateHook).toBe(true);
   item.testBeforeCreateHook = false;
   await item.save();
   expect(item.testBeforeCreateHook).toBe(false);
-  const newItem = await SomethingWithHooks.findById(item.id);
+  const newItem = await ASomethingWithHooks.findById(item.id);
   expect(newItem?.testBeforeCreateHook).toBe(false);
 });
 
 test('afterCreate hook on update', async () => {
-  const item = new SomethingWithHooks();
+  const item = new ASomethingWithHooks();
   await item.save();
   expect(item.testAfterCreateHook).toBe(true);
   item.testAfterCreateHook = false;
   await item.save();
   expect(item.testAfterCreateHook).toBe(false);
-  const newItem = await SomethingWithHooks.findById(item.id);
+  const newItem = await ASomethingWithHooks.findById(item.id);
   expect(newItem?.testAfterCreateHook).toBe(false);
 });
 
 test('beforeUpdate hook on update', async () => {
-  const item = new SomethingWithHooks();
+  const item = new ASomethingWithHooks();
   await item.save();
   expect(item.testBeforeUpdateHook).toBe(undefined);
   await item.save();
   expect(item.testBeforeUpdateHook).toBe(true);
-  const newItem = await SomethingWithHooks.findById(item.id);
+  const newItem = await ASomethingWithHooks.findById(item.id);
   expect(newItem?.testBeforeUpdateHook).toBe(true);
 });
 
 test('afterUpdate hook on update', async () => {
-  const item = new SomethingWithHooks();
+  const item = new ASomethingWithHooks();
   await item.save();
   expect(item.testAfterUpdateHook).toBe(undefined);
   await item.save();
   expect(item.testAfterUpdateHook).toBe(true);
-  const newItem = await SomethingWithHooks.findById(item.id);
+  const newItem = await ASomethingWithHooks.findById(item.id);
   expect(newItem?.testAfterUpdateHook).toBe(undefined);
 });
