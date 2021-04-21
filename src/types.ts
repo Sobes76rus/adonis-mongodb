@@ -265,20 +265,18 @@ declare module '@ioc:Mongodb/Model' {
 }
 
 declare module '@ioc:Mongodb/Hooks' {
-  import { Model } from '@ioc:Mongodb/Model';
+  import { Model, AutoIncrementModel } from '@ioc:Mongodb/Model';
 
-  interface IHooks {
-    (
-      target: Model,
-      propertyName: string,
-      descriptor: TypedPropertyDescriptor<Function>,
-    ): undefined;
-  }
+  function hook(
+    target: Model | AutoIncrementModel,
+    propertyName: string,
+    descriptor: TypedPropertyDescriptor<Function>,
+  ): void;
 
-  export let beforeCreate: IHooks;
-  export let afterCreate: IHooks;
-  export let beforeUpdate: IHooks;
-  export let afterUpdate: IHooks;
+  export let beforeCreate: typeof hook;
+  export let beforeUpdate: typeof hook;
+  export let afterCreate: typeof hook;
+  export let afterUpdate: typeof hook;
 }
 
 declare module '@ioc:Mongodb/ObjectId' {

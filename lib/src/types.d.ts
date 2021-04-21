@@ -151,14 +151,12 @@ declare module '@ioc:Mongodb/Model' {
     }
 }
 declare module '@ioc:Mongodb/Hooks' {
-    import { Model } from '@ioc:Mongodb/Model';
-    interface IHooks {
-        (target: Model, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): undefined;
-    }
-    let beforeCreate: IHooks;
-    let afterCreate: IHooks;
-    let beforeUpdate: IHooks;
-    let afterUpdate: IHooks;
+    import { Model, AutoIncrementModel } from '@ioc:Mongodb/Model';
+    function hook(target: Model | AutoIncrementModel, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): void;
+    let beforeCreate: typeof hook;
+    let beforeUpdate: typeof hook;
+    let afterCreate: typeof hook;
+    let afterUpdate: typeof hook;
 }
 declare module '@ioc:Mongodb/ObjectId' {
     import { ObjectId } from 'mongodb';
