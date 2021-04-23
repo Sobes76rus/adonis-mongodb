@@ -23,16 +23,16 @@ export default class MongodbEnsureIndexes extends BaseCommand {
   public connection: string;
 
   @inject(['Mongodb/Database', 'Mongodb/Model'])
-  public async run(db: MongodbContract): Promise<void> {
+  public async run(db: MongodbContract, tModel: typeof Model): Promise<void> {
     if (this.connection && !db.hasConnection(this.connection)) {
       this.logger.error(
         `no MongoDB connection registered with name "${this.connection}"`,
       );
 
       // @ts-ignore
-      for (let model of Model.$allModels) {
+      for (let model of tModel.$allModels) {
         const indexes = model.prepareIndexes(model);
-        const collection = await Model.getCollection();
+        const collection = await tModel.getCollection();
 
         for (let index of indexes) {
           // @ts-ignore
