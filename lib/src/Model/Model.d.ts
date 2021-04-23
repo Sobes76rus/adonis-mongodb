@@ -28,6 +28,8 @@ declare class FindResult<T> {
 }
 export declare class Model {
     private static $hooks;
+    static $allModels: typeof Model[];
+    static $indexes: any[];
     static $database: Mongodb;
     static collectionName?: string;
     readonly _id: any;
@@ -63,9 +65,12 @@ export declare class Model {
     fill<T extends Partial<Omit<this, '_id' | 'id' | ModelReadonlyFields>>>(values: NoExtraProperties<Partial<Omit<this, '_id' | 'id' | ModelReadonlyFields>>, T>): this;
     static addHook(name: string, target: Model, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): void;
     protected callHooks(name: string, ...args: any[]): Promise<void>;
+    static prepareIndexes(target: typeof Model): any[];
 }
 export declare class AutoIncrementModel extends Model {
     constructor(dbObj?: Record<string, unknown>, options?: IModelOptions);
     save(options?: UpdateOneOptions): Promise<boolean>;
 }
+export declare function register(target: typeof Model): void;
+export declare function parseIndex(index: any): any;
 export {};
