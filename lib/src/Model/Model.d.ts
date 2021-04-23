@@ -28,8 +28,8 @@ declare class FindResult<T> {
 }
 export declare class Model {
     private static $hooks;
+    protected static $indexes: any[];
     static $allModels: typeof Model[];
-    static $indexes: any[];
     static $database: Mongodb;
     static collectionName?: string;
     readonly _id: any;

@@ -111,8 +111,8 @@ function computeCollectionName(constructorName: string): string {
 
 export class Model {
   private static $hooks: Map<string, Map<any, Array<Function>>> = new Map();
+  protected static $indexes: any[];
   public static $allModels: typeof Model[] = [];
-  public static $indexes: any[] = [];
   public static $database: Mongodb;
   public static collectionName?: string;
 

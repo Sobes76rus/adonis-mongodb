@@ -29,20 +29,20 @@ export default class MongodbEnsureIndexes extends BaseCommand {
         `no MongoDB connection registered with name "${this.connection}"`,
       );
 
-      // @ts-ignore
-      for (let model of tModel.$allModels) {
-        const indexes = model.prepareIndexes(model);
-        const collection = await tModel.getCollection();
-
-        for (let index of indexes) {
-          // @ts-ignore
-          this.logger.info(`Create index on ${collection.name}`);
-          await collection.createIndex(index.keys, index.opts);
-        }
-      }
-
       process.exitCode = 1;
       return;
+    }
+
+    // @ts-ignore
+    for (let model of tModel.$allModels) {
+      const indexes = model.prepareIndexes(model);
+      const collection = await tModel.getCollection();
+
+      for (let index of indexes) {
+        // @ts-ignore
+        this.logger.info(`Create index on ${collection.name}`);
+        await collection.createIndex(index.keys, index.opts);
+      }
     }
   }
 }
