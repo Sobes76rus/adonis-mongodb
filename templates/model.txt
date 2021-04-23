@@ -1,0 +1,7 @@
+import { register } from "@ioc:Mongodb/Model";
+import Model from "App/Models";
+
+@register
+export default class ${className} extends Model {
+  $indexes = [];
+}

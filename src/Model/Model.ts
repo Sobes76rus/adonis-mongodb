@@ -1,5 +1,5 @@
 import { Exception } from '@poppinss/utils';
-import { cloneDeep, isEqual, pickBy, snakeCase } from 'lodash';
+import _, { cloneDeep, isEqual, pickBy, snakeCase } from 'lodash';
 import {
   ClientSession,
   Collection,
@@ -111,6 +111,8 @@ function computeCollectionName(constructorName: string): string {
 
 export class Model {
   private static $hooks: Map<string, Map<any, Array<Function>>> = new Map();
+  public static $allModels: typeof Model[] = [];
+  public static $indexes: any[] = [];
   public static $database: Mongodb;
   public static collectionName?: string;
 
@@ -416,13 +418,28 @@ export class Model {
   }
 
   protected async callHooks(name: string, ...args: any[]) {
-    for (let type of Model.$hooks.get(name)?.keys() || []) {
+    for (let type of Model.$hooks.get(name)?.keys() ?? []) {
       if (this instanceof type) {
-        for (let trigger of Model.$hooks.get(name)?.get(type) || []) {
+        for (let trigger of Model.$hooks.get(name)?.get(type) ?? []) {
           await trigger.apply(this, args);
         }
       }
     }
+  }
+
+  public static prepareIndexes(target: typeof Model) {
+    let cls = target;
+    let obj = [];
+
+    while (cls) {
+      for (let index of cls.$indexes?.reverse() ?? []) {
+        obj.push(parseIndex(index));
+      }
+
+      cls = Object.getPrototypeOf(cls.prototype)?.constructor;
+    }
+
+    return obj.reverse();
   }
 }
 
@@ -435,6 +452,7 @@ export class AutoIncrementModel extends Model {
     this.$ensureNotDeleted();
     const collection = await this.$ensureCollection();
 
+    const created = this.id === undefined;
     if (this.id === undefined) {
       await this.callHooks('beforeCreate');
     } else {
@@ -471,7 +489,7 @@ export class AutoIncrementModel extends Model {
     }
     this.$originalData = cloneDeep(this.$currentData);
 
-    if (this.id === undefined) {
+    if (created) {
       await this.callHooks('afterCreate');
     } else {
       await this.callHooks('afterUpdate');
@@ -479,4 +497,73 @@ export class AutoIncrementModel extends Model {
 
     return true;
   }
+}
+
+export function register(target: typeof Model) {
+  Model.$allModels.push(target);
+}
+
+export function parseIndex(index: any) {
+  if (_.isString(index)) {
+    const [keys, ...opts] = index.split(':');
+
+    return {
+      keys: _.reduce(
+        keys.split(','),
+        (obj, key) => {
+          const c: string = key[0];
+          key = key.substr(1);
+          let ind: 1 | -1 | 'hashed' | 'text' = 1;
+
+          switch (c) {
+            case '+': {
+              break;
+            }
+            case '-': {
+              ind = -1;
+              break;
+            }
+            case '#': {
+              ind = 'hashed';
+              break;
+            }
+            case '@': {
+              ind = 'text';
+              break;
+            }
+            default:
+              throw new Error(`Invalid index: ${index}`);
+          }
+
+          // @ts-ignore
+          obj[key] = ind;
+          return obj;
+        },
+        {},
+      ),
+
+      opts: _.reduce(
+        opts,
+        (obj, key) => {
+          switch (key) {
+            case 'unique':
+              // @ts-ignore
+              obj.unique = true;
+              break;
+            default:
+              throw new Error(`Undefined index option: ${index}`);
+          }
+
+          return obj;
+        },
+        {},
+      ),
+    };
+  }
+
+  if (_.has(index, 'keys') && _.has(index, 'opts')) {
+    return index;
+  }
+
+  throw new Error(`Invalid index: ${index}`);
 }

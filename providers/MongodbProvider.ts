@@ -5,7 +5,7 @@ import { ApplicationContract } from '@ioc:Adonis/Core/Application';
 
 import { getMongodbModelAuthProvider } from '../src/Auth/MongodbModelAuthProvider';
 import createMigration from '../src/Migration';
-import { Model, AutoIncrementModel } from '../src/Model/Model';
+import { Model, AutoIncrementModel, register } from '../src/Model/Model';
 import { Mongodb } from '../src/Mongodb';
 import * as Hooks from '../src/Model/Hooks';
 
@@ -28,7 +28,7 @@ export default class MongodbProvider {
         this.app.container.use('Mongodb/Database'),
       );
 
-      return { Model, AutoIncrementModel };
+      return { Model, AutoIncrementModel, register };
     });
     this.app.container.singleton('Mongodb/Hooks', () => Hooks);
 
