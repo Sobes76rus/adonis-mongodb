@@ -1,14 +1,7 @@
-import { join } from 'path';
-
-import {
-  inject,
-  BaseCommand,
-  args,
-  flags,
-} from '@adonisjs/core/build/standalone';
+import { inject, BaseCommand, flags } from '@adonisjs/core/build/standalone';
 
 import { MongodbContract } from '@ioc:Mongodb/Database';
-import { Model } from '@ioc:Mongodb/Model';
+import { AutoIncrementModel, Model } from '@ioc:Mongodb/Model';
 
 export default class MongodbEnsureIndexes extends BaseCommand {
   public static commandName = 'mongodb:ensure-indexes';
@@ -22,8 +15,12 @@ export default class MongodbEnsureIndexes extends BaseCommand {
   })
   public connection: string;
 
-  @inject(['Mongodb/Database', 'Mongodb/Model'])
-  public async run(db: MongodbContract, ModelNS: any): Promise<void> {
+  @inject(['Mongodb/Database', 'Mongodb/Model', 'App/Models'])
+  public async run(
+    db: MongodbContract,
+    ModelNS: any,
+    _: typeof Model[] | typeof AutoIncrementModel[],
+  ): Promise<void> {
     if (this.connection && !db.hasConnection(this.connection)) {
       this.logger.error(
         `no MongoDB connection registered with name "${this.connection}"`,
@@ -37,11 +34,11 @@ export default class MongodbEnsureIndexes extends BaseCommand {
     // @ts-ignore
     for (let model of tModel.$allModels) {
       const indexes = model.prepareIndexes(model);
-      const collection = await tModel.getCollection();
+      const collection = await model.getCollection();
 
       for (let index of indexes) {
         // @ts-ignore
-        this.logger.info(`Create index on ${collection.name}`);
+        this.logger.info(`Create index on ${model.name}`);
         await collection.createIndex(index.keys, index.opts);
       }
     }
