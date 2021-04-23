@@ -149,7 +149,10 @@ declare module '@ioc:Mongodb/Model' {
          */
         hashDriver?: keyof HashersList;
     }
-    function register(target: typeof Model): void;
+    interface IRegister {
+        (target: typeof Model): void;
+    }
+    let register: IRegister;
 }
 declare module '@ioc:Mongodb/Hooks' {
     import { Model } from '@ioc:Mongodb/Model';

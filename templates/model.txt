@@ -3,5 +3,5 @@ import Model from "App/Models";
 
 @register
 export default class ${className} extends Model {
-  $indexes = [];
+  private static $indexes = [];
 }
