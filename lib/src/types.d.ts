@@ -36,6 +36,7 @@ declare module '@ioc:Mongodb/Model' {
     import { UserProviderContract } from '@ioc:Adonis/Addons/Auth';
     type ModelCreateOptions = CollectionInsertOneOptions;
     interface ModelConstructor<IdType = ObjectId> {
+        $indexes: any[];
         new (...args: any[]): Model<IdType>;
         create<T extends Model<IdType>, ValueType = any>(this: Constructor<T>, value: ValueType, options?: ModelCreateOptions): Promise<T>;
         findOne<T extends Model<IdType>>(this: Constructor<T>, filter: FilterQuery<T>, options?: FindOneOptions<T>): Promise<T | null>;

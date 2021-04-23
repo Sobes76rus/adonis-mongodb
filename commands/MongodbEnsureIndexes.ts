@@ -23,7 +23,7 @@ export default class MongodbEnsureIndexes extends BaseCommand {
   public connection: string;
 
   @inject(['Mongodb/Database', 'Mongodb/Model'])
-  public async run(db: MongodbContract, tModel: typeof Model): Promise<void> {
+  public async run(db: MongodbContract, ModelNS: any): Promise<void> {
     if (this.connection && !db.hasConnection(this.connection)) {
       this.logger.error(
         `no MongoDB connection registered with name "${this.connection}"`,
@@ -33,6 +33,7 @@ export default class MongodbEnsureIndexes extends BaseCommand {
       return;
     }
 
+    const tModel: typeof Model = ModelNS.Model;
     // @ts-ignore
     for (let model of tModel.$allModels) {
       const indexes = model.prepareIndexes(model);

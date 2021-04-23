@@ -55,6 +55,7 @@ declare module '@ioc:Mongodb/Model' {
   export type ModelCreateOptions = CollectionInsertOneOptions;
 
   export interface ModelConstructor<IdType = ObjectId> {
+    $indexes: any[];
     new (...args: any[]): Model<IdType>;
     create<T extends Model<IdType>, ValueType = any>(
       this: Constructor<T>,
