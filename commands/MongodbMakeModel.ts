@@ -24,7 +24,7 @@ export default class MongodbMakeModel extends BaseCommand {
     const stub = join(__dirname, '../../templates/model.txt');
 
     this.generator
-      .addFile(name, { pattern: 'snakecase' })
+      .addFile(name, { pattern: 'pascalcase' })
       .stub(stub)
       .destinationDir(folder)
       .appRoot(this.application.makePathFromCwd())

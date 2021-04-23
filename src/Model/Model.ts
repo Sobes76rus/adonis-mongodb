@@ -396,7 +396,7 @@ export class Model {
 
   public static addHook(
     name: string,
-    target: Model,
+    target: Model | AutoIncrementModel,
     propertyName: string,
     descriptor: TypedPropertyDescriptor<Function>,
   ) {
@@ -499,7 +499,7 @@ export class AutoIncrementModel extends Model {
   }
 }
 
-export function register(target: typeof Model) {
+export function register(target: typeof Model | typeof AutoIncrementModel) {
   Model.$allModels.push(target);
 }
 

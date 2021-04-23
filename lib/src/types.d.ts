@@ -150,14 +150,14 @@ declare module '@ioc:Mongodb/Model' {
         hashDriver?: keyof HashersList;
     }
     interface IRegister {
-        (target: typeof Model): void;
+        (target: typeof Model | typeof AutoIncrementModel): void;
     }
     let register: IRegister;
 }
 declare module '@ioc:Mongodb/Hooks' {
-    import { Model } from '@ioc:Mongodb/Model';
+    import { Model, AutoIncrementModel } from '@ioc:Mongodb/Model';
     interface IHooks {
-        (target: Model, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): undefined;
+        (target: Model | AutoIncrementModel, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): undefined;
     }
     let beforeCreate: IHooks;
     let afterCreate: IHooks;

@@ -1,7 +1,7 @@
-import { Model } from './Model';
+import { Model, AutoIncrementModel } from './Model';
 
 export function beforeCreate(
-  target: Model,
+  target: Model | AutoIncrementModel,
   propertyName: string,
   descriptor: TypedPropertyDescriptor<Function>,
 ) {
@@ -9,7 +9,7 @@ export function beforeCreate(
 }
 
 export function afterCreate(
-  target: Model,
+  target: Model | AutoIncrementModel,
   propertyName: string,
   descriptor: TypedPropertyDescriptor<Function>,
 ) {
@@ -17,7 +17,7 @@ export function afterCreate(
 }
 
 export function beforeUpdate(
-  target: Model,
+  target: Model | AutoIncrementModel,
   propertyName: string,
   descriptor: TypedPropertyDescriptor<Function>,
 ) {
@@ -25,7 +25,7 @@ export function beforeUpdate(
 }
 
 export function afterUpdate(
-  target: Model,
+  target: Model | AutoIncrementModel,
   propertyName: string,
   descriptor: TypedPropertyDescriptor<Function>,
 ) {

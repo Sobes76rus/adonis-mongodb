@@ -63,7 +63,7 @@ export declare class Model {
     delete(options?: CommonOptions): Promise<boolean>;
     merge<T extends Partial<Omit<this, '_id' | 'id' | ModelReadonlyFields>>>(values: NoExtraProperties<Partial<Omit<this, '_id' | 'id' | ModelReadonlyFields>>, T>): this;
     fill<T extends Partial<Omit<this, '_id' | 'id' | ModelReadonlyFields>>>(values: NoExtraProperties<Partial<Omit<this, '_id' | 'id' | ModelReadonlyFields>>, T>): this;
-    static addHook(name: string, target: Model, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): void;
+    static addHook(name: string, target: Model | AutoIncrementModel, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): void;
     protected callHooks(name: string, ...args: any[]): Promise<void>;
     static prepareIndexes(target: typeof Model): any[];
 }
@@ -71,6 +71,6 @@ export declare class AutoIncrementModel extends Model {
     constructor(dbObj?: Record<string, unknown>, options?: IModelOptions);
     save(options?: UpdateOneOptions): Promise<boolean>;
 }
-export declare function register(target: typeof Model): void;
+export declare function register(target: typeof Model | typeof AutoIncrementModel): void;
 export declare function parseIndex(index: any): any;
 export {};

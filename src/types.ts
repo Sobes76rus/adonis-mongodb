@@ -264,18 +264,18 @@ declare module '@ioc:Mongodb/Model' {
   }
 
   interface IRegister {
-    (target: typeof Model): void;
+    (target: typeof Model | typeof AutoIncrementModel): void;
   }
 
   export let register: IRegister;
 }
 
 declare module '@ioc:Mongodb/Hooks' {
-  import { Model } from '@ioc:Mongodb/Model';
+  import { Model, AutoIncrementModel } from '@ioc:Mongodb/Model';
 
   interface IHooks {
     (
-      target: Model,
+      target: Model | AutoIncrementModel,
       propertyName: string,
       descriptor: TypedPropertyDescriptor<Function>,
     ): undefined;
