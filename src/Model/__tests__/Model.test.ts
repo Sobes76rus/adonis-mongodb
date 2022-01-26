@@ -34,6 +34,18 @@ class Something extends Model {
   public test: boolean;
 }
 
+class SomethingWithAlreadySaved extends Model {
+  public get alreadySaved() {
+    return this.$alreadySaved;
+  }
+}
+
+class SomethingWithAlreadySavedInt extends AutoIncrementModel {
+  public get alreadySaved() {
+    return this.$alreadySaved;
+  }
+}
+
 class SomethingWithHooks extends Model {
   public testBeforeCreateHook: boolean;
   public testAfterCreateHook: boolean;
@@ -403,6 +415,26 @@ test('toJSON method', async () => {
   };
 
   expect(JSON.stringify(jsonPost)).toStrictEqual(JSON.stringify(expected));
+});
+
+test('alreadySaved', async () => {
+  const item = new SomethingWithAlreadySaved();
+  expect(item.alreadySaved).toBe(false);
+  expect(await item.save()).toBe(true);
+  expect(item.alreadySaved).toBe(true);
+
+  const item2 = await SomethingWithAlreadySaved.findByIdOrThrow(item.id);
+  expect(item2.alreadySaved).toBe(true);
+});
+
+test('alreadySaved AutoIncrementModel', async () => {
+  const item = new SomethingWithAlreadySavedInt();
+  expect(item.alreadySaved).toBe(false);
+  expect(await item.save()).toBe(true);
+  expect(item.alreadySaved).toBe(true);
+
+  const item2 = await SomethingWithAlreadySavedInt.findByIdOrThrow(item.id);
+  expect(item2.alreadySaved).toBe(true);
 });
 
 test('beforeCreate hook on create', async () => {

@@ -68,7 +68,7 @@ export declare class Model {
     static prepareIndexes(target: typeof Model): any[];
 }
 export declare class AutoIncrementModel extends Model {
-    constructor(dbObj?: Record<string, unknown>, options?: IModelOptions);
+    constructor(dbObj?: Record<string, unknown>, options?: IModelOptions, alreadyExists?: boolean);
     save(options?: UpdateOneOptions): Promise<boolean>;
 }
 export declare function register(target: typeof Model | typeof AutoIncrementModel): void;

@@ -1,5 +1,5 @@
 import { register } from "@ioc:Mongodb/Model";
-import Model from "App/Models";
+import Model from "App/Models/Model";
 
 @register
 export default class ${className} extends Model {

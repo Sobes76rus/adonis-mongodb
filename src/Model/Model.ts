@@ -97,10 +97,14 @@ class FindResult<T> {
 
   public async *[Symbol.asyncIterator](): AsyncIterableIterator<T> {
     for await (const value of this.$cursor) {
-      yield new this.$constructor(value, {
-        collection: this.$collection,
-        session: this.$options?.session,
-      });
+      yield new this.$constructor(
+        value,
+        {
+          collection: this.$collection,
+          session: this.$options?.session,
+        },
+        true,
+      );
     }
   }
 }
@@ -180,10 +184,14 @@ export class Model {
     options?: CollectionInsertOneOptions,
   ): Promise<T> {
     const collection = await this.getCollection();
-    const instance = new this(value, {
-      collection,
-      session: options?.session,
-    });
+    const instance = new this(
+      value,
+      {
+        collection,
+        session: options?.session,
+      },
+      false,
+    );
     await instance.save(options);
     return instance;
   }
@@ -284,7 +292,7 @@ export class Model {
   protected $prepareToSet() {
     const dirty = this.$dirty();
     const dirtyEntries = Object.entries(dirty);
-    if (dirtyEntries.length === 0) {
+    if (dirtyEntries.length === 0 && this.$alreadySaved) {
       return null;
     }
 
@@ -444,25 +452,28 @@ export class Model {
 }
 
 export class AutoIncrementModel extends Model {
-  public constructor(dbObj?: Record<string, unknown>, options?: IModelOptions) {
-    super(dbObj, options);
+  public constructor(
+    dbObj?: Record<string, unknown>,
+    options?: IModelOptions,
+    alreadyExists = false,
+  ) {
+    super(dbObj, options, alreadyExists);
   }
 
   public async save(options?: UpdateOneOptions): Promise<boolean> {
     this.$ensureNotDeleted();
     const collection = await this.$ensureCollection();
 
-    const created = this.id === undefined;
-    if (this.id === undefined) {
+    if (this.$alreadySaved === false) {
       await this.callHooks('beforeCreate');
     } else {
       await this.callHooks('beforeUpdate');
     }
 
-    const toSet = this.$prepareToSet();
+    const toSet = this.$prepareToSet() ?? {};
     if (toSet === null) return false;
 
-    if (this.id === undefined) {
+    if (this.$alreadySaved === false) {
       const connection = AutoIncrementModel.$database.connection();
       const counterCollection = await connection.collection<{ count: number }>(
         '__adonis_mongodb_counters',
@@ -473,7 +484,7 @@ export class AutoIncrementModel extends Model {
         { $inc: { count: 1 } },
         { session: options?.session, upsert: true },
       );
-      const newCount = doc.value ? doc.value.count + 1 : 1;
+      const newCount = toSet._id ?? (doc.value ? doc.value.count + 1 : 1);
       toSet._id = newCount;
       await collection.insertOne(toSet, {
         session: this.$options?.session,
@@ -489,7 +500,8 @@ export class AutoIncrementModel extends Model {
     }
     this.$originalData = cloneDeep(this.$currentData);
 
-    if (created) {
+    if (this.$alreadySaved === false) {
+      this.$alreadySaved = true;
       await this.callHooks('afterCreate');
     } else {
       await this.callHooks('afterUpdate');
