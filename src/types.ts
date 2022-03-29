@@ -286,6 +286,8 @@ declare module '@ioc:Mongodb/Hooks' {
   export let afterCreate: IHooks;
   export let beforeUpdate: IHooks;
   export let afterUpdate: IHooks;
+  export let beforeDelete: IHooks;
+  export let afterDelete: IHooks;
 }
 
 declare module '@ioc:Mongodb/ObjectId' {

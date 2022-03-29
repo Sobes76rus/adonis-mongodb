@@ -164,6 +164,8 @@ declare module '@ioc:Mongodb/Hooks' {
     let afterCreate: IHooks;
     let beforeUpdate: IHooks;
     let afterUpdate: IHooks;
+    let beforeDelete: IHooks;
+    let afterDelete: IHooks;
 }
 declare module '@ioc:Mongodb/ObjectId' {
     import { ObjectId } from 'mongodb';
