@@ -361,6 +361,7 @@ export class Model {
 
   public async delete(options?: CommonOptions): Promise<boolean> {
     this.$ensureNotDeleted();
+    await this.callHooks('beforeDelete');
     const collection = await this.$ensureCollection();
     const result = await collection.deleteOne(
       {
@@ -369,6 +370,7 @@ export class Model {
       { session: this.$options.session, ...options },
     );
     this.$isDeleted = true;
+    await this.callHooks('afterDelete');
     return result.deletedCount === 1;
   }
 

@@ -3,3 +3,5 @@ export declare function beforeCreate(target: Model | AutoIncrementModel, propert
 export declare function afterCreate(target: Model | AutoIncrementModel, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): void;
 export declare function beforeUpdate(target: Model | AutoIncrementModel, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): void;
 export declare function afterUpdate(target: Model | AutoIncrementModel, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): void;
+export declare function beforeDelete(target: Model | AutoIncrementModel, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): void;
+export declare function afterDelete(target: Model | AutoIncrementModel, propertyName: string, descriptor: TypedPropertyDescriptor<Function>): void;

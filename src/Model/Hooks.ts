@@ -31,3 +31,19 @@ export function afterUpdate(
 ) {
   Model.addHook('afterUpdate', target, propertyName, descriptor);
 }
+
+export function beforeDelete(
+  target: Model | AutoIncrementModel,
+  propertyName: string,
+  descriptor: TypedPropertyDescriptor<Function>,
+) {
+  Model.addHook('beforeDelete', target, propertyName, descriptor);
+}
+
+export function afterDelete(
+  target: Model | AutoIncrementModel,
+  propertyName: string,
+  descriptor: TypedPropertyDescriptor<Function>,
+) {
+  Model.addHook('afterDelete', target, propertyName, descriptor);
+}
